@@ -34,7 +34,7 @@ public class GreetingResourceTest {
         return ShrinkWrap.create(WebArchive.class)
                 .addClass(GreetingMessage.class)
                 .addClass(GreetingService.class).addClass(SimpleGreetingService.class)
-                .addClasses(GreetingResource.class, JaxrsActivator.class)
+                .addClasses(GreetingResource.class, JaxrsActivator.class, ThrowableHandler.class)
                 // Enable CDI
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -75,6 +75,23 @@ public class GreetingResourceTest {
             assertTrue("message should start with \"Say Hello to JakartaEE at \"",
                     greetingGetResponse.readEntity(GreetingMessage.class).getMessage().startsWith("Say Hello to JakartaEE"));
 
+        }
+    }
+    
+    @Test
+    public void should_fail() throws MalformedURLException {
+        LOGGER.log(Level.INFO, " Running test:: GreetingResourceTest#should_fail ... ");
+        final WebTarget greetingTarget = client.target(new URL(base, "api/greeting/fail").toExternalForm());
+        try (final Response greetingGetResponse = greetingTarget.request()
+            .accept(MediaType.APPLICATION_JSON)
+            .get()) {
+            
+            LOGGER.info(greetingGetResponse.getStatus()+"");
+            
+            //assertEquals("response status is ok", 200, greetingGetResponse.getStatus());
+            //assertTrue("message should start with \"Say Hello to JakartaEE at \"",
+              //  greetingGetResponse.readEntity(GreetingMessage.class).getMessage().startsWith("Say Hello to JakartaEE"));
+            
         }
     }
 }
